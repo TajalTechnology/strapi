@@ -1,216 +1,225 @@
-<!--
-  Student Name:
-  Student Number:
--->
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Welcome to FlowTow!</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <link rel="stylesheet" href="./css/style.css" type="text/css">
-    <!-- Include Handlebars from a CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
-    <script src="./js/main.js" type=module defer></script>
-  </head>
-  <body>
 
-    <header class="header">
-      
-      <div class="topnav" id="myTopnav">
-        <a href="#"><div id="logo">This space using for logo</div></a>
-        <a href="#" class="active">Home</a>
-        <a href="#whatis"></a>
-        <a href="#!/whatis">About</a>
-        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-          <i class="fa fa-bars"></i>
-        </a>
-      </div>
+<head>
+  <meta charset="UTF-8">
+  <title>People Project</title>
+  <meta http-equiv="Cache-control" content="no-cache">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css" type="text/css">
+  <script src="js/main.js" type=module defer></script>
 
+  <!-- Include Handlebars from a CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+</head>
 
-      <script>
-        function myFunction() {
-          var x = document.getElementById("myTopnav");
-          if (x.className === "topnav") {
-            x.className += " responsive";
-          } else {
-            x.className = "topnav";
-          }
-        }
-        </script>
-    </header>
+<body>
 
-    <div id="content">
+  <header class="header">
+
+    <div class="topnav" id="myTopnav">
+      <a href="#">
+        <div id="logo">This space using for logo</div>
+      </a>
+      <a href="#" class="active">Home</a>
+      <a href="#!/auth/local">login</a>
+      <a href="#!/all-posts">All Posts</a>
+      <a href="#!/my-posts">My Posts</a>
+      <a href="#!/whatis">About</a>
+      <a href="#whatis"></a>
+      <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+        <i class="fa fa-bars"></i>
+      </a>
 
     </div>
-    <div id="heading">
-          
-      <hgroup>
-          <h1 class="welcome">Welcome to FlowTow!</h1>
-      </hgroup>
-  
-      <div id="target"></div>
 
-  </div>
+    <div id="login"></div>
+
+    <div id="randomPost"></div>
+
+    <script>
+      function myFunction() {
+        var x = document.getElementById("myTopnav");
+        if (x.className === "topnav") {
+          x.className += " responsive";
+        } else {
+          x.className = "topnav";
+        }
+      }
+    </script>
+  </header>
+<br>
+<br>
+
+<div class="addPost">
+  <div class='welcome'>Add Post</div>
+  <form id="person-form">
+    <div class='content'>
+    <div class='input-fields'>
+    <label for="p_author">Author:</label><br> <input name="p_author" /><br><br>
+    <label for="p_likes">Likes:</label><br><input name="p_likes" /><br><br>
+    <label for="p_url">P-Url:</label><br><input name="p_url" /><br><br>
+    <label for="p_caption">P_Caption:</label><br><input name="p_caption" /><br><br>
+    <label for="p_image">P_Image:</label><br><input name=p_image type=file accept=image/*><br><br>
+    <input type="submit" value="Add" />
+
+
+    </div>
+    </div>
+
+  </form>
 </div>
 
 
-  <!-- Templates -->
 
-  <script id="login-template" type="application/x-handlebars-template">
-    <form id="login-form">
-      <lable for="username">Username:</lable>
-      <input name="username"/>
-      <lable for="password">Password:</lable>
-      <input name="password"/>
+  <div id="target">
+    <div id="list"></div>
+    <div id="person"></div>
+  </div>
 
-      <input type="submit"/>
-
-    </form>
-  </script> 
-
-  <script id="main-page-template" type="application/x-handlebars-template">
-    
-    
-    <div class="mainCard">
-
-      <!-- random 3 posts -->
-
-      <div class="flowtow">
-        <h1 class="randompostTitle">Random three images with description</h1>
-      <div class="row">
-        {{#each random}}
-          <div class="column3post">
-            <div class="card3">
-              <img src="{{p_url}} "/>
-              <h3>Caption : {{p_caption}}</h3>
-              <p>Author:{{p_author}}</p>
-              <p><button type="button">Like<i class="fa fa-thumbs-up"></i></button>:{{p_likes}}</p>
-            </div>
-          </div>
-        {{/each}}
-      </div>
-      <div>
+  <footer>
+    <p id="copyright">All content and images subject to copyright &copy; COMP2110.</p>
+  </footer>
 
 
-      <! --recent posts -->
-      <div>
+  <!-- Login script -->
+  <script id="login-template" type="text/x-handlebars-template">
+          {{#if user}} 
+            <p>Logged in as {{user.username}}</p>
+          {{else}} 
+            <form id="login-form">
 
-        <div class="row">
-          <h1 class="randompostTitle">Top 1O recentPosts</h1>
-          {{#each recentPosts}}
-            <div class="column">
-              <div class="card">
-                <img src="{{p_url}} "/>
-                <h3>Caption : {{p_caption}}</h3>
-                <p><button type="button"><i class="fa fa-thumbs-up"></i></button>:{{p_likes}}</p>
-                <p>Author:{{p_author}}</p>
-                <p>published_at:{{published_at}}</p>
+              <div class='bold-line'></div>
+              <div class='container'>
+                <div class='window'>
+                  <div class='overlay'></div>
+                  <div class='content'>
+                    <div class='welcome'>Welcome to flowtow!</div>
+                    <div class='subtitle'>We're almost done. Before using our services you need to create an account.</div>
+                    <div class='input-fields'>
+                      Username: <input placeholder="Enter Username" name=username>
+                      Password: <input placeholder="Enter Password" name=password type=password autocomplete="on"><br><br>
+                      <input type=submit value=Login>
+                    </div>
+                    <div class='spacing'>or continue with <span class='highlight'>Facebook</span></div>
+                  </div>
+                </div>
               </div>
+
+
+              <!-- Username: <input placeholder="Enter Username" name=username>
+              Password: <input placeholder="Enter Password" name=password type=password autocomplete="on">
+              <input type=submit value=Login> -->
+            </form> 
+          {{/if}}
+        </script>
+
+  <script id="people-list-template" type="text/x-handlebars-template">
+          <h2>List of People</h2>
+          <table>
+              {{#each people}}
+                  <tr>
+                    <td class=person-name data-id={{id}}>{{p_author}}</td> 
+                    <!-- <td>{{p_image}}</td> -->
+                    <!-- <td>{{p_user.username}}</td> -->
+                  </tr>
+              {{/each}}
+          </table>
+          <hr>
+         
+          <!-- <h2>Random Three Post</h2> -->
+
+          <div class="mainCard">
+            <!-- random 3 posts -->
+      
+            <div class="flowtow">
+              <h1 class="randompostTitle">Random three images with description</h1>
+            <div class="row">
+              {{#each random}}
+                <div class="column3post">
+                  <div class="card3">
+                    <img src="{{p_url}} "/>
+                    <h3 class="post-details" data-id={{id}} >Caption : {{p_caption}}</h3>
+                    <p>Author:{{p_author}}</p>
+                    <p><button type="button">Like<i class="fa fa-thumbs-up"></i></button>:{{p_likes}}</p>
+                  </div>
+                </div>
+              {{/each}}
             </div>
+            <div>
+              <hr>
+
+
+
+          <!-- {{#each random}}
+            {{id}}
+          {{/each}} -->
+
+          <br><br><br><br><br><br>
+
+
+            <table id="customers" >
+              <caption><h2>Recent Posts</h2></caption>
+              <tr>
+                <th>P_Author</th>
+                <th>P_Likes</th>
+                <th>P_Url</th>
+                <th>P_Image</th>
+                <th>P_Caption</th>
+              </tr>
+              {{#each recentPosts}}
+              <tr>
+                <td>{{p_author}}</td>
+                <td><p><button type="button">Like<i class="fa fa-thumbs-up"></i></button>:{{p_likes}}</p></td>
+                <td>{{p_url}}</td>
+                <td><img src="{{p_image.url}}" alt="{{p_author}}"></td>
+                <td>{{p_caption}}</td>
+              </tr>
+              {{/each}}
+
+            </table>
+
+            <br><br><br>
+
+          <h2>Most Popular post</h2>
+          <table id="customers">
+            <tr>
+              <th>P_Author</th>
+              <th>P_Likes</th>
+              <th>P_Url</th>
+              <th>P_Image</th>
+              <th>P_Caption</th>
+            </tr>
+          {{#each popularPost}}
+          <tr>
+            <td>{{p_author}}</td>
+            <td><button type="button">Like<i class="fa fa-thumbs-up"></i></button>{{p_likes}}</td>
+            <td>{{p_url}}</td>
+            <td><img src="{{p_image.url}}" alt="{{p_author}}"></td>
+            <td>{{p_caption}}</td>
+          </tr>
           {{/each}}
-        </div>
+  </script>
+
+  <script id="person-template" type="text/x-handlebars-template">
+    <img src="{{p_image.url}}" alt="{{p_author}}">
+    <ul>
+      <li>{{p_author}}</li>
+      <li>p_caption: {{p_caption}}</li>
+      <form id="comment-form">
+        Id:{{id}}
+        <input type="text" placeholder="Comment here" name="c_content">
+        <input type="text" placeholder="Id here" name="c_post">
         
-      </div>
+        <button type="submit">Add Comment</button>
 
-      <! --popular posts -->
-
-
-      <div class="row">
-        <h1 class="randompostTitle">Top 1O Posts</h1>
-        {{#each popularPosts}}
-          <div class="column">
-            <div class="card">
-              <img src="{{p_url}} "/>
-              <h3>Caption : {{p_caption}}</h3>
-              <p><button type="button">Like<i class="fa fa-thumbs-up"></i></button>:{{p_likes}}</p>
-              <p>Author:{{p_author}}</p>
-              <p>published_at:{{published_at}}</p>
-            </div>
-          </div>
-        {{/each}}
-      </div>
+      </form>
+      <li></li>
       
-    <div>
+    </ul>
   </script>
 
-  <script id="main-page-template" type="application/x-handlebars-template">
-    
-    <div class="mainCard">
-      <div>
-      <div>
-    <div> class="flowtow">
-        <h1 class="randompostTitle">Single images with description</h1>
-        <p>{{{{p_author}}}}</>
-      </div
-  </script>
-  
-  <script id="footer-page-template" type="application/x-handlebars-template">
 
-    <footer class="footer-distributed">
- 
-      <div class="footer-left">
-      
-      <h3>Macquarie<span>University</span></h3>
-      
-      <p class="footer-links">
-      <a href="#">Home</a>
-      ·
-      <a href="#">About</a>
-      ·
-      <a href="#">Faq</a>
-      ·
-      <a href="#">Contact</a>
-      </p>
-      
-      <p class="footer-company-name">webdevtrick &copy; 2019</p>
-      </div>
-      
-      <div class="footer-center">
-      
-      <div>
-      <i class="fa fa-map-marker"></i>
-      <p><span>Level 1 & 2 Anzac House, 245 Castlereagh St, </span> Sydney NSW 2000, Australia</p>
-      </div>
-      
-      <div>
-      <i class="fa fa-phone"></i>
-      <p>+61 2 9850 7111</p>
-      </div>
-      
-      <div>
-      <i class="fa fa-envelope"></i>
-      <p><a href="mailto:support@company.com">https://www.mq.edu.au/</a></p>
-      </div>
-      
-      </div>
-      
-      <div class="footer-right">
-      
-      <p class="footer-company-about">
-      <span>About the company</span>
-      We're thrilled to announce Macquarie Business School's Global MBA has been named #2 in Australia and Top 20 in the world, in the QS World University Rankings 2021 Online MBA Rankings.
-      </p>
-      
-      <div class="footer-icons">
-      
-      <a href="#"><i class="fa fa-facebook"></i></a>
-      <a href="#"><i class="fa fa-twitter"></i></a>
-      <a href="#"><i class="fa fa-linkedin"></i></a>
-      <a href="#"><i class="fa fa-github"></i></a>
-      
-      </div>
-      
-      </div>
-      <p id="copyright">All content and images subject to copyright &copy; COMP2110/6110 FlowTow 2021.</p>
-      
-      </footer>
+</body>
 
-
-
-  </script>
-
-  </body>
 </html>

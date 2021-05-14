@@ -1,46 +1,145 @@
-import { Model } from './model.js';
-import * as views from './views.js';
-import { splitHash } from './util.js';
+import * as views from './views.js'
+import {Model} from './model.js'
+import { Auth } from './service.js';
 
-window.addEventListener('modelUpdated', redraw);
+window.addEventListener("modelUpdated", function(e) {
+    
+    console.log('modelUpdated triggered')
+    let people = Model.getPosts();
+    let popularPost = Model.getPopularPosts();
+    let recentPosts = Model.getRecentPosts();
+    let random = Model.getRandomPosts();
+    // console.log('11',random);
+    views.listPeopleView("list", people, popularPost,recentPosts,random)
+    bindings();
+})
 
-function redraw() {
-    let posts = Model.getPosts();
-    const hash = splitHash(window.location.hash);
-    let content = "<p> Hello World </p>";
-
-    switch (hash.path) {
-
-        case 'whatis':
-            console.log('t');
-            content = views.footerPageView();
-            break;
-
-        default:
-            {
-                let singlePost = Model.getPost();
-                const recentPosts = Model.getRecentPosts();
-                const popularPosts = Model.getPopularPosts();
-                const random = Model.getRandomPosts();
-
-                if (recentPosts !== null && singlePost === null) {
-                    content = views.mainPageView(popularPosts, recentPosts, random) + views.footerPageView();
-                }else if(singlePost !== null){
-                    console.log(singlePost.id);
-                    content = (singlePost.p_likes);
-                }
-                 else {
-                    document.getElementById("target").innerHTML = content;
-                }
-            }
-            break;
-    }
-    document.getElementById("target").innerHTML = content;
+window.addEventListener("personAdded", function(e) {
+    
+    console.log('personAdded triggered')
+    let people = Model.getPosts();
+    views.listPeopleView("list", people)
+    bindings();
 }
-window.onhashchange = redraw;
+);
+
+window.addEventListener("commentAdded", function(e) {
+    
+    console.log('commentAdded triggered')
+    let people = Model.getPosts();
+    views.listPeopleView("list", people)
+    bindings();
+}
+);
+
+window.addEventListener('userLogin', function(e) {
+    console.log('userLgin triggered')
+    console.log('the user name is ', Auth.getUser())
+    views.loginView('login', Auth.getUser())
+})
+
+function person_click_handler () {
+
+    let id = this.dataset.id
+    console.log('the type of id is', typeof(id))
+
+    let person = Model.getPost(Number(id))
+    console.log(person);
+
+    views.personView("person", person)
+    
+}
+
+function person_form_handler(event){
+    
+    event.preventDefault()
+    console.log(this)
+
+    const p_author = this.elements['p_author'].value
+    const p_likes = this.elements['p_likes'].value
+    const p_url = this.elements['p_url'].value
+    const p_caption = this.elements['p_caption'].value
+
+    const p_image = this.elements['p_image'].files[0]
+
+    const personData = {
+        "p_author": p_author,
+        "p_likes": p_likes,
+        "p_url": p_url,
+        "p_caption": p_caption,
+    }
+    const pictureData = new FormData()
+    pictureData.append("files", p_image)
+
+    Model.addPost(pictureData, personData)
+
+}
+
+// comment 
+function comment_form_handler(event){
+    
+    event.preventDefault()
+    console.log(this)
+
+    const c_content = this.elements['c_content'].value
+    const c_post = this.elements['c_post'].value
+
+    const commentData = {
+        "c_content": c_content,
+        "c_post": c_post,
+    }
 
 
+    Model.addComment(commentData)
 
-window.onload = function () {
-    const updatePosts = Model.updatePosts();
-};
+}
+
+function login_form_handler (event) {
+    event.preventDefault()
+    console.log('the login form is ', this)
+
+    const username = this.elements['username'].value
+    const password = this.elements['password'].value
+
+    const authInfo = {
+        'identifier': username,
+        'password': password
+    }
+
+    //send authInfo to backend for user authentication
+    Auth.login(authInfo)
+}
+
+
+function bindings() {
+    
+    let names = document.getElementsByClassName("person-name")
+    for (let i=0; i<names.length; i++) {
+        names[i].onclick = person_click_handler
+    }
+
+    let form = document.getElementById('person-form')
+    form.onsubmit = person_form_handler
+
+    
+
+    if (!Auth.getUser()) {
+        let loginform = document.getElementById('login-form')
+        loginform.onsubmit = login_form_handler
+    }
+
+    let commentForm = document.getElementById('comment-form')
+    console.log('132',commentForm);
+    if(commentForm){
+        commentForm.onsubmit = comment_form_handler
+    }
+    
+    
+
+}
+
+
+window.onload = function (){
+    Model.load();
+    views.loginView('login', Auth.getUser())
+}

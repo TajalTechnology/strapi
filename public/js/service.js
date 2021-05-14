@@ -1,59 +1,45 @@
-/*
- *
- * Module: <name>
- * < short description here e.g. "This module implements user authentication ...">
- *
- * Student Name:
- * Student Number:
- *
- */ 
- 
-export {Auth}
+export{Auth}
 
 const Auth = {
-    userData: null,
+    userData: null, 
 
-    // login - handle user login  
-    //      by submitting a POST request to the server API
-    //      username - is the input username
-    //      password - is the input password
-    // when the request is resolved, creates a "userLogin" event
     login: function(authInfo) {
+        //console.log('the authInfo is ', authInfo)
         fetch('/auth/local', {
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
-            body:JSON.stringify(authInfo)
+            body: JSON.stringify(authInfo)
         })
-        .then((response) =>{
+        .then((response) => {
             return response.json()
         })
-        .then((data)=>{
-            console.log('Well done');
-            console.log('Responce data is ', data);
+        .then((data) => {
+            console.log('Well Done!')
+            console.log('the response data is ', data)
             this.userData = data
+
             let event = new CustomEvent('userLogin')
             window.dispatchEvent(event)
         })
     }, 
 
-    //getUser - return the user object from userData
-    getUser: function() {
+    getJWT: function(){
         if (this.userData) {
-            return this.userData.user;
+            return this.userData.jwt
         } else {
-            return null;
+            return null
         }
     },
 
-    //getJWT - get the JWT from userData
-    getJWT: function() {
+    getUser: function(){
         if (this.userData) {
-            return this.userData.jwt;
+            return this.userData.user
         } else {
-            return null;
-        } 
+            return null
+        }
     }
-    
+
+
 }

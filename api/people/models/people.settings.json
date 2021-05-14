@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "people",
+  "info": {
+    "name": "People",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "p_author": {
+      "type": "text"
+    },
+    "p_likes": {
+      "type": "integer"
+    },
+    "p_image": {
+      "model": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "plugin": "upload",
+      "required": false,
+      "pluginOptions": {}
+    },
+    "p_url": {
+      "type": "text"
+    },
+    "p_caption": {
+      "type": "text"
+    }
+  }
+}

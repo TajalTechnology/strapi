@@ -1,41 +1,50 @@
-/*
- *
- * Module: <name>
- * < short description here e.g. "This module implements view functions...">
- *
- * Student Name:
- * Student Number:
- *
- */
+export {listPeopleView, personView, loginView,}
 
+//applyTemplate - apply a template to some data
+// and insert into the pge
+// targetid - id of the element to insert content
+// templateid - id of the element containing the template
+// data - data to pass to the template
+function applyTemplate (targetid, templateid, data) {
+    let target = document.getElementById(targetid)
+    
+    let template = Handlebars.compile(
+        document.getElementById(templateid).textContent
+    )
 
-function applyTemplate(template_id, data){
-    let template = Handlebars.compile(document.getElementById(template_id).textContent)
-    return template(data);
+    target.innerHTML = template(data)
 }
 
+//listPeopleView - generate a view of a list of people
+// and insert it as 'targetid' in the document
+function listPeopleView (targetid,  people,popularPost,recentPosts,random) {
+    console.log('views');
+    applyTemplate(targetid, "people-list-template", {"people": people, "popularPost":popularPost,"recentPosts":recentPosts,"random":random})
 
-export function mainPageView(popularPosts, recentPosts,random){
-    return applyTemplate('main-page-template', {popularPosts, recentPosts,random});
 }
 
-export function footerPageView(){
-    return applyTemplate('footer-page-template');
+//listPersonView - generate a view of an individual person
+// and insert it as 'targetid' in the document
+function personView(targetid, person) {
+
+    applyTemplate(targetid, "person-template", person)
+
 }
 
-// export function loginPageView(){
-//     return applyTemplate('login-template');
+// function personAddView() {
+
+//     applyTemplate("person-add-template")
+
 // }
 
-// postFormView();
-// export function postFormView(){
-//     return applyTemplate('registration-page-template');
+//loginView - display the username or loginform based on the login status
+function loginView (targetid, user) {
+    applyTemplate(targetid, 'login-template', {"user": user})
+}
+
+
+// function randomPostView (targetid, user) {
+
+//     console.log('47',user);
+//     applyTemplate(targetid, 'random-template', {"user": user})
 // }
-
-export function singlePostView(singlePost){
-    return applyTemplate('single-page-template', singlePost);
-}
-
-export function error404View(message){
-    return "<p>" + message + "</p>";
-}

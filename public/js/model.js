@@ -1,24 +1,5 @@
 export {Model};
-/*
- *
- * Module: <name>
- * < short description here e.g. "This module implements ...">
- *
- * Student Name:
- * Student Number:
- *
- */
-
-/* 
- * Model class to support the FlowTow application
- * this object provides an interface to the web API and a local
- * store of data that the application can refer to.
- * The API generates different events:
- *   "modelUpdated" event when new data has been retrieved from the API
- *   "postAdded" event when a request to add a new post returns
- *   "likeAdded" event when a request to add a new like returns
- *   "commentAdded" event when a request to add a new comment returns 
-*/
+import {Auth} from './service.js'
 
 function orderByPublished(a, b) {
     if (a.published_at > b.published_at) {
@@ -41,114 +22,130 @@ function orderByLikes(a, b) {
 }
 
 const Model = {
-    posts_url: '/posts', 
-    uploadUrl: '/upload',  
-    commentsUrl: '/comments',
-    
-    //this will hold the post data stored in the model
-    data: {
-        posts: []
+
+    people_url: "/people",
+    posts_url:"/posts",
+    comments_url:"/comments",
+    upload_url: "/upload",
+
+    data:{
+        people: [],
+        posts:[],
+        comments:[],
     },
 
-    // updatePosts - retrieve the latest list of posts from the server API
-    // when the request is resolved, creates a "modelUpdated" event 
-    updatePosts: function() {
+    load: function(){
         fetch(this.posts_url)
+        .then(
+            function(response){
+            //parse it into json and return it back
+                return response.json(); 
+            }
+        )
+        .then(
+            (data) => {
+
+                //Model.data.people = data
+                this.data.posts = data
+                let event = new CustomEvent("modelUpdated",{detail:this});
+                window.dispatchEvent(event)
+            }
+        )
+    }, 
+        // addComment - add a comment to a post 
+    //      by submitting a POST request to the server API
+    //      commentData is an object containing the content of the comment, the author and the postid
+    // when the request is resolved, creates an "commentAdded" event
+    addComment: function (commentData) {
+        fetch(this.comments_url,{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(commentData)
+        })
         .then((response) =>{
             return response.json();
         })
         .then((data)=>{
-            this.data.posts = data;
-            const event = new CustomEvent("modelUpdated", {detail:this});
-            window.dispatchEvent(event);
+            this.comments.push(data);
+            let event = new CustomEvent('commentAdded');
+            window.dispatchEvent(event)
         })
     },
 
-    // getPosts - return an array of post objects
-    getPosts: function() {
-        //before that you may need to sort the posts by their timestamp
-        return this.data.posts;
+    addPost: function (pictureData, personData){
+        fetch(this.upload_url, {
+            method: 'POST',
+            // headers: {
+            //     Authorization: `bearer ${Auth.getJWT()}`
+            // },
+            body: pictureData
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            console.log('the data is ', data)
+            personData = {...personData, "p_image": data[0]}
+            return fetch(this.posts_url, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                // Authorization: `bearer ${Auth.getJWT()}`
+                },
+                body: JSON.stringify(personData)
+            })
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((data) => {
+            console.log(data)
+            this.data.posts.push(data)
+            let event = new CustomEvent('personAdded');
+            window.dispatchEvent(event)
+        })
     },
 
-    // getPost - return a single post given its id
-    getPost: function(postid) {
+    getPosts: function() {
+        return this.data.posts
+    },
 
-        for(const post of this.data.posts){
-            if(post.id == postid){
-                return post;
+    getPost: function(id){
+        let people =  this.getPosts()
+
+        for(let i=0; i<people.length; i++) {
+            if (people[i].id === id) {
+                return people[i]
             }
         }
-        return null;
-
     },
 
     setPosts: function(posts) {
         this.data.posts = posts;
     },
 
-    // addPost - add a new post by submitting a POST request to the server API
-    // postData is an object containing all fields in the post object (e.g., p_caption)
-    // when the request is resolved, creates an "postAdded" event
-    addPost: function(postData) {
-        fetch(this.posts_url,{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body: JSON.stringify(postData)
+    getRandomPosts: function(){
+        fetch(this.posts_url)
+        .then(
+            function(response){
+            //parse it into json and return it back
+                return response.json(); 
+            }
+        )
+        .then((myArrays) => { 
+            this.data.posts = myArrays
         })
-        .then((response) =>{
-            return response.json();
-        })
-        .then((data)=>{
-            console.log('1',data);
-            this.posts.push(data);
-        })
-    },
-
-    // getUserPosts - return just the posts for one user as an array
-    getUserPosts: function(userid) {
-        
-    },
-
-    // addLike - increase the number of likes by 1 
-    //      by submitting a PUT request to the server API
-    //      postId - is the id of the post
-    // when the request is resolved, creates an "likeAdded" event
-    addLike: function (postId) {
-        fetch(this.posts_url/postId,{
-            method:'PUT',
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body: JSON.stringify(postData)
-        })
-        .then((response) =>{
-            return response.json();
-        })
-        .then((data)=>{
-            console.log('1',data);
-            this.posts.push(data);
-        })
-    },
-
-    // addComment - add a comment to a post 
-    //      by submitting a POST request to the server API
-    //      commentData is an object containing the content of the comment, the author and the postid
-    // when the request is resolved, creates an "commentAdded" event
-    addComment: function (commentData) {
-        
-    },
-
-    //getRandomPosts - return N random posts as an array
-    getRandomPosts: function(N){
-        var randomNums = [];
+        // console.log('123',this.data.posts);
+        // var randomNums = [];
         var myArray = this.data.posts;
         var myNewArray = [];
         for (var i = 0; i < 3; i++) {
             myNewArray.push(myArray.splice(Math.random() * (myArray.length - 1), 3).pop());
         }
         return myNewArray;
+
     },
 
     // getRecentPosts - return the N most recent as an array
@@ -167,5 +164,4 @@ const Model = {
         result.reverse();
         return result.slice(0, 10);
     },
-
 }
